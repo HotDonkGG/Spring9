@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -15,4 +16,6 @@ public class Film {
     private String description;
     private Date releaseDate;
     private Long duration;
+    private int likes;
+    private Set<Integer> like;
 }

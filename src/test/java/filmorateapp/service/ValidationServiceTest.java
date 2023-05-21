@@ -5,12 +5,13 @@ import org.junit.jupiter.api.Test;
 import filmorateapp.model.Film;
 import filmorateapp.model.User;
 import filmorateapp.model.validation.ValidationException;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@SpringBootTest
 class ValidationServiceTest {
     private ValidationService validationService;
 
@@ -20,9 +21,9 @@ class ValidationServiceTest {
         return calendar.getTime();
     }
 
-    private Date getDate(int year, int month, int day) {
+    private Date getDate(int month, int day) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day);
+        calendar.set(1800, month, day);
         return calendar.getTime();
     }
 
@@ -41,7 +42,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    public void validateUserExceptDogEmail() {
+    void validateUserExceptDogEmail() {
         User user = new User();
         user.setEmail("TestUser2");
         user.setLogin("TestUser2");
@@ -92,7 +93,7 @@ class ValidationServiceTest {
         Film film = new Film();
         film.setName("LordOfTheRings");
         film.setDescription("TwoCastle");
-        film.setReleaseDate(getDate(1800, 10, 10));
+        film.setReleaseDate(getDate(10, 10));
         film.setDuration(240L);
         assertThrows(ValidationException.class, () -> validationService.validate(film));
     }

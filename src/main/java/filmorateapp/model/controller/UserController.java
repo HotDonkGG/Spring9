@@ -1,23 +1,25 @@
-package filmorateapp.controller;
+package filmorateapp.model.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import filmorateapp.model.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import filmorateapp.service.ValidationService;
 
 import java.util.ArrayList;
 import java.util.List;
-// Надо ловить конкретную ошибку
+
 @RestController
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
 
-    private List<User> users = new ArrayList<>();
-    private int nextId = 0;
+    private final List<User> users = new ArrayList<>();
+    private long nextId = 0;
     @Autowired
     private ValidationService validationService; // загуглить инжекты бина виды
+    private UserController userService;
 
     @PostMapping
     public User addUsers(@RequestBody User user) {
@@ -60,5 +62,29 @@ public class UserController {
             log.error("Мапа пуста " + e.getMessage());
         }
         return users;
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<String> addFriend(@PathVariable long id, @PathVariable long friendId) {
+        userService.addFriend(id, friendId);
+        return ResponseEntity.ok("Друг добавлен");
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public ResponseEntity<String> removeFriend(@PathVariable long id, @PathVariable long friendId) {
+        userService.removeFriend(id, friendId);
+        return ResponseEntity.ok("Друг удалён");
+    }
+
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<List<User>> getFriends(@PathVariable long id) {
+        List<User> friends = userService.getFriends(id).getBody();
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public ResponseEntity<List<User>> getMutualFriends(@PathVariable long id, @PathVariable long otherId) {
+        List<User> commonFriends = userService.getMutualFriends(id, otherId).getBody();
+        return ResponseEntity.ok(commonFriends);
     }
 }

@@ -1,8 +1,9 @@
-package filmorateapp.controller;
+package filmorateapp.model.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import filmorateapp.model.Film;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import filmorateapp.service.ValidationService;
 
@@ -13,10 +14,11 @@ import java.util.List;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private List<Film> films = new ArrayList<>();
+    private final List<Film> films = new ArrayList<>();
     private int nextId = 0;
     @Autowired
     private ValidationService validationService;
+    private FilmController filmService;
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
@@ -51,7 +53,7 @@ public class FilmController {
     @GetMapping
     public List<Film> getAllFilms() {
         try {
-            if (!films.isEmpty()) {// валидация в отдельном методе
+            if (!films.isEmpty()) {
                 log.info("Получите Список фильмов" + films);
                 return films;
             }
@@ -59,5 +61,23 @@ public class FilmController {
             log.error("Мапа пуста " + e.getMessage());
         }
         return films;
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public ResponseEntity<String> addLike(@PathVariable long id, @PathVariable long userId) {
+        filmService.addLike(id, userId);
+        return ResponseEntity.ok("Like поставлен");
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public ResponseEntity<String> removeLike(@PathVariable long id, @PathVariable long userId) {
+        filmService.removeLike(id, userId);
+        return ResponseEntity.ok("Like удален");
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<Film>> getBestFilms(@RequestParam(required = false, defaultValue = "10") int count) {
+        List<Film> popularFilms = filmService.getBestFilms(count).getBody();
+        return ResponseEntity.ok(popularFilms);
     }
 }
