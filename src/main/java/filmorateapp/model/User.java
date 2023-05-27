@@ -1,20 +1,22 @@
 package filmorateapp.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User {
     private Long id;
     private String email;
     private String login;
     private String name;
-    private Date birthday;
+    private LocalDate birthday;
     private Set<Long> friends;
 }

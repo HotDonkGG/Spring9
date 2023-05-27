@@ -1,5 +1,6 @@
 package filmorateapp.service;
 
+import filmorateapp.model.validation.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import filmorateapp.model.Film;
@@ -7,24 +8,23 @@ import filmorateapp.model.User;
 import filmorateapp.model.validation.ValidationException;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class ValidationServiceTest {
     private ValidationService validationService;
 
-    private Date getDate(int daysToAdd) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, daysToAdd);
-        return calendar.getTime();
+    private LocalDate getDate(int daysToAdd) {
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.plusDays(daysToAdd);
     }
 
-    private Date getDate(int month, int day) {
+    private LocalDate getDate(int month, int day) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(1800, month, day);
-        return calendar.getTime();
+        return LocalDate.of(1800, month, day);
     }
 
     @BeforeEach
@@ -33,7 +33,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    public void validateUserEmptyEmail() {
+    void validateUserEmptyEmail() {
         User user = new User();
         user.setEmail("");
         user.setLogin("TestUser1");
@@ -51,7 +51,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    public void validateUserLoginSpace() {
+    void validateUserLoginSpace() {
         User user = new User();
         user.setEmail("TestUser3@gmail.com");
         user.setLogin("Test User3");
@@ -60,7 +60,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    public void validateUserBornFuture() {
+    void validateUserBornFuture() {
         User user = new User();
         user.setEmail("TestUser4@gmail.com");
         user.setLogin("TestUser4");
@@ -69,7 +69,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    public void validateFilmEmptyName() {
+    void validateFilmEmptyName() {
         Film film = new Film();
         film.setName("");
         film.setDescription("Test1FilmDescription");
@@ -79,7 +79,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    public void validateFilmDescription() {
+    void validateFilmDescription() {
         Film film = new Film();
         film.setName("StarWars");
         film.setDescription("StarWars".repeat(1000));
@@ -89,7 +89,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    public void validateFilmRelease() {
+    void validateFilmRelease() {
         Film film = new Film();
         film.setName("LordOfTheRings");
         film.setDescription("TwoCastle");
@@ -99,7 +99,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    public void validateFilmDuration() {
+    void validateFilmDuration() {
         Film film = new Film();
         film.setName("HarryPotter");
         film.setDescription("HarryPotterPart1");

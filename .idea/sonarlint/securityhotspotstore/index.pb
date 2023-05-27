@@ -15,5 +15,3 @@ S
 mvnw.cmd,1/f/1f1763f358c257ea3515417352b82b0165647ad1
 9
 	README.md,8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
-„
-Tsrc/test/java/filmorateapp/yandex/practicum/filmorate/FilmorateApplicationTests.java,e/d/ed58b576e1226e79bce6376e8e7d314a8c890376

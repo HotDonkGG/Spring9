@@ -1,90 +1,68 @@
 package filmorateapp.model.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import filmorateapp.model.User;
-import org.springframework.http.ResponseEntity;
+import filmorateapp.service.user.UserService;
+import filmorateapp.storage.user.UserStorage;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import filmorateapp.service.ValidationService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/users")
 public class UserController {
 
-    private final List<User> users = new ArrayList<>();
-    private long nextId = 0;
-    @Autowired
-    private ValidationService validationService; // загуглить инжекты бина виды
-    private UserController userService;
+    private final UserService userService;
+    private final UserStorage userStorage;
 
     @PostMapping
-    public User addUsers(@RequestBody User user) {
-        try {
-            validationService.validate(user);
-            user.setId(nextId++);
-            users.add(user);
-            log.info("Добавлен новый пользователь" + user.getId());
-        } catch (Exception e) {
-            log.error("Ошибка добавления пользователя" + e.getMessage());
-        }
-        return user;
+    public User addUser(@RequestBody User user) {
+        log.info("Поступил запрос на создание пользователя.");
+        return userStorage.addUser(user);
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody User user) {
-        try {
-            for (int i = 0; i < users.size(); i++) {
-                if (users.get(i).getId() == id) {
-                    validationService.validate(user);
-                    users.set(i, user);
-                    log.info("Обновление пользователя с айди" + id);
-                    return user;
-                }
-            }
-        } catch (Exception e) {
-            log.error("Ошибка обновления пользователя " + e.getMessage());
-        }
-        return user;
+    @PutMapping
+    public User updateUser(@RequestBody long id, @RequestBody User user) {
+        log.info("Поступил запрос на обновление пользователя.");
+        return userStorage.updateUser(id, user);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriend(@PathVariable User id, @PathVariable long friendId) {
+        log.info("Поступил запрос на добавления в друзья.");
+        return userService.addFriend(id, friendId);
     }
 
     @GetMapping
     public List<User> getAllUsers() {
-        try {
-            if (!users.isEmpty()) {
-                log.info("Получите список пользователей " + users);
-                return users;
-            }
-        } catch (Exception e) {
-            log.error("Мапа пуста " + e.getMessage());
-        }
-        return users;
+        log.info("Поступил запрос на получение списка пользователей.");
+        return userService.getAllUsers();
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<String> addFriend(@PathVariable long id, @PathVariable long friendId) {
-        userService.addFriend(id, friendId);
-        return ResponseEntity.ok("Друг добавлен");
-    }
-
-    @DeleteMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<String> removeFriend(@PathVariable long id, @PathVariable long friendId) {
-        userService.removeFriend(id, friendId);
-        return ResponseEntity.ok("Друг удалён");
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable String id) {
+        log.info("Поступил запрос на получение пользователя по id.");
+        return userStorage.getUserById(Integer.parseInt(id));
     }
 
     @GetMapping("/{id}/friends")
-    public ResponseEntity<List<User>> getFriends(@PathVariable long id) {
-        List<User> friends = userService.getFriends(id).getBody();
-        return ResponseEntity.ok(friends);
+    public List<User> getFriends(@PathVariable long id) {
+        log.info("Поступил запрос на получение списка друзей.");
+        return userService.getUserFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public ResponseEntity<List<User>> getMutualFriends(@PathVariable long id, @PathVariable long otherId) {
-        List<User> commonFriends = userService.getMutualFriends(id, otherId).getBody();
-        return ResponseEntity.ok(commonFriends);
+    public List<User> getMutualFriends(@PathVariable String id, @PathVariable String otherId) {
+        log.info("Поступил запрос на получения списка общих друзей.");
+        return userService.getMutualFriends(Integer.parseInt(id), Integer.parseInt(otherId));
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable User id, @PathVariable long friendId) {
+        log.info("Поступил запрос на удаление из друзей.");
+        userService.removeFriend(id, friendId);
     }
 }

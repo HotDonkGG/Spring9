@@ -15,5 +15,3 @@ S
 pom.xml,4/4/442292b8a7efeabbe4cc176709b833b1792140ec
 9
 	README.md,8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
-„
-Tsrc/test/java/filmorateapp/yandex/practicum/filmorate/FilmorateApplicationTests.java,e/d/ed58b576e1226e79bce6376e8e7d314a8c890376

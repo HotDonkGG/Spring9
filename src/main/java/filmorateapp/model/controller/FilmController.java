@@ -1,83 +1,69 @@
 package filmorateapp.model.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import filmorateapp.model.Film;
-import org.springframework.http.ResponseEntity;
+import filmorateapp.service.film.FilmService;
+import filmorateapp.storage.film.FilmStorage;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import filmorateapp.service.ValidationService;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@RestController
-@RequestMapping("/films")
-@Slf4j
-public class FilmController {
-    private final List<Film> films = new ArrayList<>();
-    private int nextId = 0;
-    @Autowired
-    private ValidationService validationService;
-    private FilmController filmService;
 
+@RestController
+@Slf4j
+@RequestMapping("/film")
+@RequiredArgsConstructor
+public class FilmController {
+
+    private final FilmStorage filmStorage;
+    private final FilmService filmService;
+
+    /**
+     * Добавление фильма
+     */
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
-        try {
-            validationService.validate(film);
-            film.setId(nextId++);
-            films.add(film);
-            log.info("Фильм добавлен с Айди " + film.getId());
-        } catch (Exception e) {
-            log.error("Ошибка добавления фильма " + e.getMessage());
-        }
-        return film;
+        log.info("Поступил запрос на добавление фильма.");
+        return filmStorage.addFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@PathVariable int id, @RequestBody Film film) {
-        try {
-            for (int i = 0; i < films.size(); i++) {
-                if (films.get(i).getId() == id) {
-                    validationService.validate(film);
-                    films.set(i, film);
-                    log.info("Фильм с Айди" + id + " обновлён");
-                    return film;
-                }
-            }
-        } catch (Exception e) {
-            log.error("Ошибка обновления фильма " + e.getMessage());
-        }
-        return film;
+    public Film updateFilm(@PathVariable long id, @PathVariable Film film) {
+        log.info("Поступил запрос на изменения фильма.");
+        return filmStorage.updateFilm(id, film);
     }
 
-    @GetMapping
-    public List<Film> getAllFilms() {
-        try {
-            if (!films.isEmpty()) {
-                log.info("Получите Список фильмов" + films);
-                return films;
-            }
-        } catch (Exception e) {
-            log.error("Мапа пуста " + e.getMessage());
-        }
-        return films;
+    /**
+     * Пользователь ставит лайк фильму
+     */
+    @PutMapping("/{id}/like/{filmId}")
+    public void addLike(@PathVariable String id, @PathVariable String filmId) {
+        log.info("Поступил запрос на добавление лайка фильму.");
+        filmService.addLike(Integer.parseInt(id), Integer.parseInt(filmId));
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public ResponseEntity<String> addLike(@PathVariable long id, @PathVariable long userId) {
-        filmService.addLike(id, userId);
-        return ResponseEntity.ok("Like поставлен");
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable String id) {
+        log.info("Получен GET-запрос на получение фильма");
+        return filmStorage.getFilmById(Integer.parseInt(id));
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
-    public ResponseEntity<String> removeLike(@PathVariable long id, @PathVariable long userId) {
-        filmService.removeLike(id, userId);
-        return ResponseEntity.ok("Like удален");
-    }
-
+    /**
+     * Возвращает список из первых count фильмов по количеству лайков
+     */
     @GetMapping("/popular")
-    public ResponseEntity<List<Film>> getBestFilms(@RequestParam(required = false, defaultValue = "10") int count) {
-        List<Film> popularFilms = filmService.getBestFilms(count).getBody();
-        return ResponseEntity.ok(popularFilms);
+    public List<Film> getBestFilms(@RequestParam(defaultValue = "10") String count) {
+        log.info("Поступил запрос на получение списка 10 популярных фильмов.");
+        return filmService.getBestFilms(Integer.parseInt(count));
+    }
+
+    /**
+     * Пользователь удаляет лайк.
+     */
+    @DeleteMapping("/{id}/like/{filmId}")
+    public void deleteLike(@PathVariable String id, @PathVariable String filmId) {
+        log.info("Поступил запрос на удаление лайка у фильма.");
+        filmService.deleteLike(Integer.parseInt(filmId), Integer.parseInt(id));
     }
 }
