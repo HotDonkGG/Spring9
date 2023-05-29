@@ -2,9 +2,8 @@ name: API Tests
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   build:
-    users: https://github.com/yandex-praktikum/java-filmorate/blob/add-friends-likes/postman/sprint.json
+    steps:
+      users: https://github.com/yandex-praktikum/java-filmorate/blob/add-friends-likes/postman/sprint.json
