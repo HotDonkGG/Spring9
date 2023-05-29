@@ -5,4 +5,4 @@ on:
 
 jobs:
   build:
-    users: yandex-praktikum/java-filmorate/.github/workflows/api-tests.yml@ci
+    users: https://github.com/yandex-praktikum/java-filmorate/blob/add-friends-likes/postman/sprint.json
