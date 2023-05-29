@@ -6,4 +6,5 @@ on:
 jobs:
   build:
     steps:
-      users: https://github.com/yandex-praktikum/java-filmorate/blob/add-friends-likes/postman/sprint.json
+      - name: Run API tests
+        uses: yandex-praktikum/java-filmorate/.github/workflows/api-tests.yml@ci
