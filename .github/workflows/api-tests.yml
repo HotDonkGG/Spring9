@@ -1,0 +1,10 @@
+name: API Tests
+
+on:
+  push:
+
+jobs:
+  build:
+    steps:
+      - name: Run API tests
+        uses: yandex-praktikum/java-filmorate/.github/workflows/api-tests.yml@ci
