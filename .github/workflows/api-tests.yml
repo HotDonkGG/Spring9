@@ -1,4 +1,4 @@
-ame: Films API Tests
+name: Films API Tests
 
 on:
   pull_request:
